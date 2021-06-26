@@ -1,0 +1,427 @@
+Building parse tables...
+     [java]   Computing non-terminal nullability...
+     [java]   Computing first sets...
+     [java]   Building state machine...
+     [java]   Filling in tables...
+     [java] *** Shift/Reduce conflict found in state #16
+     [java]   between MethodDeclList ::= (*) 
+     [java]   and     Type ::= (*) IDENT 
+     [java]   under symbol IDENT
+     [java]   Resolved in favor of shifting.
+     [java] *** Reduce/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     ExprList ::= Term (*) 
+     [java]   under symbols: {PLUS, MINUS, SEMI, COLON, COMMA, RPAREN, RSQUARE, CONDITIONAL}
+     [java]   Resolved in favor of the second production.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java] *** Reduce/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Term ::= Term (*) 
+     [java]   under symbols: {PLUS, MINUS, SEMI, COLON, COMMA, RPAREN, RSQUARE, CONDITIONAL}
+     [java]   Resolved in favor of the first production.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java]   Checking for non-reduced productions...
+     [java] *** Production "Addop ::= MINUS " never reduced
+     [java] *** Production "Addop ::= PLUS " never reduced
+     [java] *** Production "Term ::= Term " never reduced
+     [java] *** More conflicts encountered than expected -- parser generation aborted
+     [java] ===== Viable Prefix Recognizer =====uilding parse tables...
+     [java]   Computing non-terminal nullability...
+     [java]   Computing first sets...
+     [java]   Building state machine...
+     [java]   Filling in tables...
+     [java] *** Shift/Reduce conflict found in state #16
+     [java]   between MethodDeclList ::= (*) 
+     [java]   and     Type ::= (*) IDENT 
+     [java]   under symbol IDENT
+     [java]   Resolved in favor of shifting.
+     [java] *** Reduce/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     ExprList ::= Term (*) 
+     [java]   under symbols: {PLUS, MINUS, SEMI, COLON, COMMA, RPAREN, RSQUARE, CONDITIONAL}
+     [java]   Resolved in favor of the second production.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #50
+     [java]   between ExprList ::= Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java] *** Reduce/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Term ::= Term (*) 
+     [java]   under symbols: {PLUS, MINUS, SEMI, COLON, COMMA, RPAREN, RSQUARE, CONDITIONAL}
+     [java]   Resolved in favor of the first production.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between ExprList ::= ExprList Addop Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol PLUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol MINUS
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MUL 
+     [java]   under symbol MUL
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) DIV 
+     [java]   under symbol DIV
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   and     Mulop ::= (*) MOD 
+     [java]   under symbol MOD
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol SEMI
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COLON
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol COMMA
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RPAREN
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol RSQUARE
+     [java]   Resolved in favor of shifting.
+     [java] *** Shift/Reduce conflict found in state #58
+     [java]   between Term ::= Term (*) 
+     [java]   under symbol CONDITIONAL
+     [java]   Resolved in favor of shifting.
+     [java]   Checking for non-reduced productions...
+     [java] *** Production "Addop ::= MINUS " never reduced
+     [java] *** Production "Addop ::= PLUS " never reduced
+     [java] *** Production "Term ::= Term " never reduced
+     [java] *** More conflicts encountered than expected -- parser generation aborted
+     [java] ===== Viable Prefix Recognizer =====

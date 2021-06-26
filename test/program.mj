@@ -1,0 +1,20 @@
+program MJProgram
+	int x; 
+	int y;
+{
+
+	
+	void main() {
+	
+		x = 1;
+		y = 2;
+		x = 5 + a;
+		
+		print(10);
+		print(10);
+		print(10);
+		print(10);
+		
+	
+	}
+}

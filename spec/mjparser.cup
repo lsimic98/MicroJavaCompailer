@@ -1,0 +1,300 @@
+package rs.ac.bg.etf.pp1;
+
+import java_cup.runtime.*;
+import org.apache.log4j.*;
+import rs.ac.bg.etf.pp1.ast.*;
+import rs.etf.pp1.symboltable.concepts.*;
+
+
+parser code {:
+
+	Logger log = Logger.getLogger(getClass());
+	boolean errorDetected = false;
+   
+   
+    // slede redefinisani metodi za prijavu gresaka radi izmene teksta poruke
+     
+    public void report_fatal_error(String message, Object info) throws java.lang.Exception {
+      done_parsing();
+      report_error(message, info);
+    }
+  
+    public void syntax_error(Symbol cur_token) {
+        report_error("\nSintaksna greska", cur_token);
+    }
+  
+    public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception {
+        report_fatal_error("Fatalna greska, parsiranje se ne moze nastaviti", cur_token);
+    }
+
+    public void report_error(String message, Object info) {
+    	errorDetected = true;
+    	StringBuilder msg = new StringBuilder(message); 
+    	if (info instanceof Symbol)
+            msg.append (" na liniji ").append(((Symbol)info).left);
+        log.error(msg.toString());
+    }
+
+
+:}
+
+
+scan with {:
+	Symbol s = this.getScanner().next_token();
+	if (s != null && s.value != null) 
+		log.info(s.toString() + " " + s.value.toString());
+	return s;
+:}
+
+init with {:
+	errorDetected = false;
+:}
+
+
+terminal PROG, BREAK, CLASS, ENUM, ELSE, CONST, IF, DO, WHILE, NEW, PRINT, READ, RETURN, VOID, EXTENDS, CONTINUE, CASE;
+terminal PLUS, MINUS, MUL, DIV, MOD, BOOL_EQUAL, BOOL_NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL;
+terminal AND, OR, EQUALS, INC, DEC, SEMI, COLON, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LBRACE, RBRACE, CONDITIONAL;
+terminal PLUS_EQUALS, MINUS_EQUALS, MUL_EQUALS, DIV_EQUALS, MOD_EQUALS;
+
+terminal Boolean BOOL_CONST;
+terminal Integer NUM_CONST;
+terminal Character CHAR_CONST;
+terminal String IDENT;
+
+nonterminal Program, ProgName, ProgDeclList, ConstDecl, ConstList, ConstIdent;
+nonterminal VarDecl, VarDeclList, VarIdent, Type;
+nonterminal ClassDecl, ClassVarDeclList;
+nonterminal MethodDeclList, MethodDecl, MethodTypeName, MethodVarDeclList;
+nonterminal FormPars, FormalParamList, FormalParamDecl;
+nonterminal Statement, StatementList;
+nonterminal DesignatorStatement;
+nonterminal Designator, DesignatorList;
+nonterminal Expr1, Expr, ExprList;
+nonterminal Term;
+nonterminal Factor;
+nonterminal Assignop, Mulop, Addop;
+
+/* Program */
+
+Program ::= (Program) PROG ProgName:p ProgDeclList LBRACE MethodDeclList RBRACE;
+
+ProgName ::= (ProgName) IDENT:progName;
+
+ProgDeclList ::= (ProgConstDeclList) ProgDeclList ConstDecl
+				|
+				(ProgVarDeclList) ProgDeclList VarDecl
+				|
+				(NoProgDeclList) /* epsilon */
+				;
+				
+/* END_Program */
+
+
+/* ConstDecl */
+
+ConstDecl ::= CONST Type ConstList SEMI;
+
+ConstList ::= (SingleConstDecl) ConstIdent
+			|
+			(MultipleConstDecl) ConstList COMMA ConstIdent
+			;
+				
+ConstIdent ::= (BooleanConst) IDENT EQUALS BOOL_CONST
+			|
+			(IntegerConst) IDENT EQUALS NUM_CONST
+			|
+			(CharacterConst) IDENT EQUALS CHAR_CONST
+			;
+			
+/* END_ConstDecl */
+
+
+/* VarDecl */
+VarDecl ::= (VarDecl) Type:varType VarDeclList SEMI;
+
+VarDeclList ::= (SingleVarDecl) VarIdent
+			|
+			(MultipleVarDecl) VarDeclList COMMA VarIdent
+			;
+
+VarIdent ::= (OneVar) IDENT:varName
+			|
+			(ArrayVar) IDENT:varName LSQUARE RSQUARE
+			;
+
+/* END_VarDecl */
+
+
+/* ClassDecl */
+
+
+
+/* END_ClassDecl */
+
+
+/* MethodDeclList */
+
+MethodDeclList ::= (MethodDeclarations) MethodDeclList MethodDecl
+				|
+				(NoMethodDecl) /* epsilon */
+				;
+				
+MethodDecl ::= (MethodDecl) MethodTypeName LPAREN FormPars RPAREN MethodVarDeclList LBRACE StatementList RBRACE;
+
+MethodTypeName ::= (NonVoidMethodType) Type:retType IDENT:methodName
+				|
+				(VoidMethodType) VOID IDENT:methodName
+				;
+
+MethodVarDeclList ::= (MethodVariables) MethodVarDeclList VarDecl
+				|
+				(NoMethodVariables) /* epsilon */
+				;
+
+/* END_MethodDeclList */
+
+
+/* FormPars */
+
+FormPars ::= (FormParams) FormalParamList
+		  |
+		  (NoFormParam) /* epsilon */
+		  ;
+
+FormalParamList ::= (FormalParamDecls) FormalParamList COMMA FormalParamDecl
+				|
+				(SingleFormalParamDecl) FormalParamDecl
+				;
+
+FormalParamDecl ::= (OneFormalParam) IDENT:varName
+			|
+			(ArrayFormalParam) IDENT:varName LSQUARE RSQUARE
+			;
+
+/* END_FormPars */
+
+
+/* Type */
+
+Type ::= (Type) IDENT;
+
+/* END_Type */
+
+
+/* Statement */
+
+Statement ::= (DesignatorStatementInStatement) DesignatorStatement SEMI
+			|
+			(Read) READ LPAREN Designator RPAREN SEMI
+			|
+			(PrintWithArgs) PRINT LPAREN Expr RPAREN SEMI
+			|
+			(PrintWithoutArgs) PRINT LPAREN Expr COMMA NUM_CONST RPAREN SEMI
+			;
+
+StatementList ::= (Statements) StatementList Statement
+				|
+				(NoStatements) /* epsilon */
+				;
+
+
+/* END_Statement */
+
+
+/* DesignatorStatement */
+
+DesignatorStatement ::= (AssingDesignatorStatement) Designator Assignop Expr
+					|
+					(IncDesignatorStatement) Designator INC
+					| 
+					(DecDesignatorStatement) Designator DEC
+					;
+
+/* END_DesignatorStatement */
+
+/* Designator */
+
+Designator ::= (Designator) IDENT:name DesignatorList;
+
+DesignatorList ::= (DesignatorListArray) LSQUARE Expr RSQUARE
+				|
+				(NoDesignatorList) /* epsilon */
+				;
+
+/* END_Designator */
+
+/* Expr */
+
+Expr1 ::= (NegativeExpr) MINUS ExprList
+		|
+		(PositiveExpr) ExprList
+		;
+
+Expr ::= (ConditionalExpr) Expr1 CONDITIONAL Expr1 COLON Expr1 /* Expr1 ? Expr1 : Expr1 - TernarniOperator */
+		|
+		(NormalExpr) Expr1
+		; 
+
+ExprList ::= (MulitExprList) ExprList Addop Term
+			|
+			(SingelExprList) Term
+			;
+
+/* END_Expr */
+
+
+/* Term */
+
+Term ::= (FactorList) Term Mulop Factor
+		|
+		(SingleFactor) Factor
+		;
+
+/* END_Term*/
+
+
+/* Factor */
+
+Factor ::= (FactorNumConst) NUM_CONST
+		|
+		(FactorCharConst) CHAR_CONST
+		|
+		(FactorBooleanConst) BOOL_CONST
+		|
+		(FactorNewArray) NEW Type:arrType LSQUARE Expr RSQUARE
+		|
+		(FactorExpr) LPAREN Expr RPAREN
+		|
+		(FactorDesignator) Designator
+		;
+
+
+/* END_Factor*/
+
+/* Operators */
+
+Assignop ::= (EqualsOperation) EQUALS;
+
+Addop ::= (Plus) PLUS
+		|
+		(Minus) MINUS
+		;
+
+Mulop ::= (Multiplication) MUL
+		|
+		(Division) DIV
+		|
+		(Moduo) MOD
+		;
+
+/* End_Operators */
+
+
+
+
+
+
+
+
+
+
