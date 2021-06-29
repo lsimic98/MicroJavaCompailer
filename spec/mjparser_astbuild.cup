@@ -61,16 +61,15 @@ terminal Integer NUM_CONST;
 terminal Character CHAR_CONST;
 terminal String IDENT;
 
-nonterminal Program Program;
-nonterminal ProgName ProgName;
-nonterminal ProgDeclList ProgDeclList;
-nonterminal ConstDecl ConstDecl;
-nonterminal ConstList ConstList;
-nonterminal ConstIdent ConstIdent;
-nonterminal VarDecl VarDecl;
-nonterminal VarDeclList VarDeclList;
-nonterminal VarIdent VarIdent;
-nonterminal Type Type;
+
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, ProgDeclList, ConstDecl, ConstList, ConstIdent;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj VarDecl, VarDeclList, VarIdent;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorList;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Expr1, ExprList, Statement, Term, Factor;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Condition, CondTerm, CondFact;
+
+// nonterminal ProgDeclList, ConstDecl, ConstList, ConstIdent;
+// nonterminal VarDecl, VarDeclList, VarIdent;
 nonterminal ClassDecl ClassDecl;
 nonterminal ClassVarDeclList ClassVarDeclList;
 nonterminal MethodDeclList MethodDeclList;
@@ -80,19 +79,19 @@ nonterminal MethodVarDeclList MethodVarDeclList;
 nonterminal FormPars FormPars;
 nonterminal FormalParamList FormalParamList;
 nonterminal FormalParamDecl FormalParamDecl;
-nonterminal Statement Statement;
 nonterminal StatementList StatementList;
 nonterminal DesignatorStatement DesignatorStatement;
-nonterminal Designator Designator;
-nonterminal DesignatorList DesignatorList;
-nonterminal Expr1 Expr1;
-nonterminal Expr Expr;
-nonterminal ExprList ExprList;
-nonterminal Term Term;
-nonterminal Factor Factor;
+// nonterminal Term;
+// nonterminal Factor;
 nonterminal Assignop Assignop;
 nonterminal Mulop Mulop;
 nonterminal Addop Addop;
+nonterminal Relop Relop;
+nonterminal BeginIf BeginIf;
+nonterminal BeginElse BeginElse;
+nonterminal RParenResolution RParenResolution;
+
+precedence left ELSE;
 
 /* Program */
 
@@ -112,24 +111,25 @@ ProgDeclList ::= (ProgConstDeclList) ProgDeclList:P1 ConstDecl:C2 {: RESULT=new 
 
 /* ConstDecl */
 
-ConstDecl ::= CONST Type:T1 ConstList:C2 SEMI {: RESULT=new ConstDeclDerived1(T1, C2); RESULT.setLine(T1left); :};
+ConstDecl ::= (ConstDecl) CONST Type:T1 ConstList:C2 SEMI {: RESULT=new ConstDecl(T1, C2); RESULT.setLine(T1left); :};
 
 ConstList ::= (SingleConstDecl) ConstIdent:C1 {: RESULT=new SingleConstDecl(C1); RESULT.setLine(C1left); :}
 			|
 			(MultipleConstDecl) ConstList:C1 COMMA ConstIdent:C2 {: RESULT=new MultipleConstDecl(C1, C2); RESULT.setLine(C1left); :}
 			;
 				
-ConstIdent ::= (BooleanConst) IDENT:I1 EQUALS BOOL_CONST:B2 {: RESULT=new BooleanConst(I1, B2); RESULT.setLine(I1left); :}
+ConstIdent ::= (BooleanConst) IDENT:booleanConstName EQUALS BOOL_CONST:booleanConstValue {: RESULT=new BooleanConst(booleanConstName, booleanConstValue); RESULT.setLine(booleanConstNameleft); :}
 			|
-			(IntegerConst) IDENT:I1 EQUALS NUM_CONST:N2 {: RESULT=new IntegerConst(I1, N2); RESULT.setLine(I1left); :}
+			(IntegerConst) IDENT:integerConstName EQUALS NUM_CONST:integerConstValue {: RESULT=new IntegerConst(integerConstName, integerConstValue); RESULT.setLine(integerConstNameleft); :}
 			|
-			(CharacterConst) IDENT:I1 EQUALS CHAR_CONST:C2 {: RESULT=new CharacterConst(I1, C2); RESULT.setLine(I1left); :}
+			(CharacterConst) IDENT:characterConstName EQUALS CHAR_CONST:characterConstValue {: RESULT=new CharacterConst(characterConstName, characterConstValue); RESULT.setLine(characterConstNameleft); :}
 			;
 			
 /* END_ConstDecl */
 
 
 /* VarDecl */
+
 VarDecl ::= (VarDecl) Type:varType VarDeclList:V1 SEMI {: RESULT=new VarDecl(varType, V1); RESULT.setLine(varTypeleft); :};
 
 VarDeclList ::= (SingleVarDecl) VarIdent:V1 {: RESULT=new SingleVarDecl(V1); RESULT.setLine(V1left); :}
@@ -186,17 +186,17 @@ FormalParamList ::= (FormalParamDecls) FormalParamList:F1 COMMA FormalParamDecl:
 				(SingleFormalParamDecl) FormalParamDecl:F1 {: RESULT=new SingleFormalParamDecl(F1); RESULT.setLine(F1left); :}
 				;
 
-FormalParamDecl ::= (OneFormalParam) IDENT:varName {: RESULT=new OneFormalParam(varName); RESULT.setLine(varNameleft); :}
-			|
-			(ArrayFormalParam) IDENT:varName LSQUARE RSQUARE {: RESULT=new ArrayFormalParam(varName); RESULT.setLine(varNameleft); :}
-			;
+FormalParamDecl ::= (OneFormalParam) Type:formalParamType IDENT:varName {: RESULT=new OneFormalParam(formalParamType, varName); RESULT.setLine(formalParamTypeleft); :}
+				|
+				(ArrayFormalParam) Type:formalParamType IDENT:varName LSQUARE RSQUARE {: RESULT=new ArrayFormalParam(formalParamType, varName); RESULT.setLine(formalParamTypeleft); :}
+				;
 
 /* END_FormPars */
 
 
 /* Type */
 
-Type ::= (Type) IDENT:I1 {: RESULT=new Type(I1); RESULT.setLine(I1left); :};
+Type ::= (Type) IDENT:typeName {: RESULT=new Type(typeName); RESULT.setLine(typeNameleft); :};
 
 /* END_Type */
 
@@ -207,9 +207,15 @@ Statement ::= (DesignatorStatementInStatement) DesignatorStatement:D1 SEMI {: RE
 			|
 			(Read) READ LPAREN Designator:D1 RPAREN SEMI {: RESULT=new Read(D1); RESULT.setLine(D1left); :}
 			|
-			(PrintWithArgs) PRINT LPAREN Expr:E1 RPAREN SEMI {: RESULT=new PrintWithArgs(E1); RESULT.setLine(E1left); :}
+			(PrintWithoutArgs) PRINT LPAREN Expr:E1 RPAREN SEMI {: RESULT=new PrintWithoutArgs(E1); RESULT.setLine(E1left); :}
 			|
-			(PrintWithoutArgs) PRINT LPAREN Expr:E1 COMMA NUM_CONST:N2 RPAREN SEMI {: RESULT=new PrintWithoutArgs(E1, N2); RESULT.setLine(E1left); :}
+			(PrintWithArgs) PRINT LPAREN Expr:E1 COMMA NUM_CONST:N2 RPAREN SEMI {: RESULT=new PrintWithArgs(E1, N2); RESULT.setLine(E1left); :}
+			|
+			(IfStatement) BeginIf:B1 LPAREN Condition:C2 RParenResolution:R3 Statement:S4 {: RESULT=new IfStatement(B1, C2, R3, S4); RESULT.setLine(B1left); :}
+			|
+			(IfElseStatement) BeginIf:B1 LPAREN Condition:C2 RParenResolution:R3 Statement:S4 BeginElse:B5 Statement:S6 {: RESULT=new IfElseStatement(B1, C2, R3, S4, B5, S6); RESULT.setLine(B1left); :}
+			|
+			(StatementBlock) LBRACE StatementList:S1 RBRACE {: RESULT=new StatementBlock(S1); RESULT.setLine(S1left); :}
 			;
 
 StatementList ::= (Statements) StatementList:S1 Statement:S2 {: RESULT=new Statements(S1, S2); RESULT.setLine(S1left); :}
@@ -219,6 +225,30 @@ StatementList ::= (Statements) StatementList:S1 Statement:S2 {: RESULT=new State
 
 
 /* END_Statement */
+
+/* If, Condition */
+BeginIf ::= (BeginIf) IF {: RESULT=new BeginIf(); :};
+BeginElse ::= (BeginElse) ELSE {: RESULT=new BeginElse(); :};
+RParenResolution ::= (RParenResolution) RPAREN {: RESULT=new RParenResolution(); :};
+
+Condition ::= (CondTermList) Condition:C1 OR CondTerm:C2 {: RESULT=new CondTermList(C1, C2); RESULT.setLine(C1left); :}
+			|
+			(SingleCondTerm) CondTerm:C1 {: RESULT=new SingleCondTerm(C1); RESULT.setLine(C1left); :}
+			;
+
+CondTerm ::= (CondFactList) CondTerm:C1 AND CondFact:C2 {: RESULT=new CondFactList(C1, C2); RESULT.setLine(C1left); :}
+			|
+			(SingleCondFact) CondFact:C1 {: RESULT=new SingleCondFact(C1); RESULT.setLine(C1left); :}
+			;
+
+CondFact ::= (SingleCondFactExpr) Expr:E1 {: RESULT=new SingleCondFactExpr(E1); RESULT.setLine(E1left); :}
+			|
+			(RelopCondFactExpr) Expr:E1 Relop:R2 Expr:E3 {: RESULT=new RelopCondFactExpr(E1, R2, E3); RESULT.setLine(E1left); :}
+			;
+
+
+
+/* END*/
 
 
 /* DesignatorStatement */
@@ -306,6 +336,19 @@ Mulop ::= (Multiplication) MUL {: RESULT=new Multiplication(); :}
 		|
 		(Moduo) MOD {: RESULT=new Moduo(); :}
 		;
+		
+Relop ::= (BoolEqual) BOOL_EQUAL {: RESULT=new BoolEqual(); :}
+		|
+		(BoolNotEqual) BOOL_NOT_EQUAL {: RESULT=new BoolNotEqual(); :}
+		|
+		(Greater) GREATER {: RESULT=new Greater(); :}
+		| 
+		(GreaterOrEqual) GREATER_OR_EQUAL {: RESULT=new GreaterOrEqual(); :}
+		|
+	 	(Less) LESS {: RESULT=new Less(); :}
+	 	|
+	 	(LessOrEqual) LESS_OR_EQUAL {: RESULT=new LessOrEqual(); :}
+	 	;
 
 /* End_Operators */
 

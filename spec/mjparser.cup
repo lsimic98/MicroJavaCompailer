@@ -61,18 +61,26 @@ terminal Integer NUM_CONST;
 terminal Character CHAR_CONST;
 terminal String IDENT;
 
-nonterminal Program, ProgName, ProgDeclList, ConstDecl, ConstList, ConstIdent;
-nonterminal VarDecl, VarDeclList, VarIdent, Type;
+
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, ProgDeclList, ConstDecl, ConstList, ConstIdent;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj VarDecl, VarDeclList, VarIdent;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorList;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Expr1, ExprList, Statement, Term, Factor;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Condition, CondTerm, CondFact;
+
+// nonterminal ProgDeclList, ConstDecl, ConstList, ConstIdent;
+// nonterminal VarDecl, VarDeclList, VarIdent;
 nonterminal ClassDecl, ClassVarDeclList;
 nonterminal MethodDeclList, MethodDecl, MethodTypeName, MethodVarDeclList;
 nonterminal FormPars, FormalParamList, FormalParamDecl;
-nonterminal Statement, StatementList;
+nonterminal StatementList;
 nonterminal DesignatorStatement;
-nonterminal Designator, DesignatorList;
-nonterminal Expr1, Expr, ExprList;
-nonterminal Term;
-nonterminal Factor;
+// nonterminal Term;
+// nonterminal Factor;
 nonterminal Assignop, Mulop, Addop;
+nonterminal Relop, BeginIf, BeginElse, RParenResolution;
+
+precedence left ELSE;
 
 /* Program */
 
@@ -92,24 +100,25 @@ ProgDeclList ::= (ProgConstDeclList) ProgDeclList ConstDecl
 
 /* ConstDecl */
 
-ConstDecl ::= CONST Type ConstList SEMI;
+ConstDecl ::= (ConstDecl) CONST Type ConstList SEMI;
 
 ConstList ::= (SingleConstDecl) ConstIdent
 			|
 			(MultipleConstDecl) ConstList COMMA ConstIdent
 			;
 				
-ConstIdent ::= (BooleanConst) IDENT EQUALS BOOL_CONST
+ConstIdent ::= (BooleanConst) IDENT:booleanConstName EQUALS BOOL_CONST:booleanConstValue
 			|
-			(IntegerConst) IDENT EQUALS NUM_CONST
+			(IntegerConst) IDENT:integerConstName EQUALS NUM_CONST:integerConstValue
 			|
-			(CharacterConst) IDENT EQUALS CHAR_CONST
+			(CharacterConst) IDENT:characterConstName EQUALS CHAR_CONST:characterConstValue
 			;
 			
 /* END_ConstDecl */
 
 
 /* VarDecl */
+
 VarDecl ::= (VarDecl) Type:varType VarDeclList SEMI;
 
 VarDeclList ::= (SingleVarDecl) VarIdent
@@ -166,17 +175,17 @@ FormalParamList ::= (FormalParamDecls) FormalParamList COMMA FormalParamDecl
 				(SingleFormalParamDecl) FormalParamDecl
 				;
 
-FormalParamDecl ::= (OneFormalParam) IDENT:varName
-			|
-			(ArrayFormalParam) IDENT:varName LSQUARE RSQUARE
-			;
+FormalParamDecl ::= (OneFormalParam) Type:formalParamType IDENT:varName
+				|
+				(ArrayFormalParam) Type:formalParamType IDENT:varName LSQUARE RSQUARE
+				;
 
 /* END_FormPars */
 
 
 /* Type */
 
-Type ::= (Type) IDENT;
+Type ::= (Type) IDENT:typeName;
 
 /* END_Type */
 
@@ -187,9 +196,15 @@ Statement ::= (DesignatorStatementInStatement) DesignatorStatement SEMI
 			|
 			(Read) READ LPAREN Designator RPAREN SEMI
 			|
-			(PrintWithArgs) PRINT LPAREN Expr RPAREN SEMI
+			(PrintWithoutArgs) PRINT LPAREN Expr RPAREN SEMI
 			|
-			(PrintWithoutArgs) PRINT LPAREN Expr COMMA NUM_CONST RPAREN SEMI
+			(PrintWithArgs) PRINT LPAREN Expr COMMA NUM_CONST RPAREN SEMI
+			|
+			(IfStatement) BeginIf LPAREN Condition RParenResolution Statement
+			|
+			(IfElseStatement) BeginIf LPAREN Condition RParenResolution Statement BeginElse Statement
+			|
+			(StatementBlock) LBRACE StatementList RBRACE
 			;
 
 StatementList ::= (Statements) StatementList Statement
@@ -199,6 +214,30 @@ StatementList ::= (Statements) StatementList Statement
 
 
 /* END_Statement */
+
+/* If, Condition */
+BeginIf ::= (BeginIf) IF;
+BeginElse ::= (BeginElse) ELSE;
+RParenResolution ::= (RParenResolution) RPAREN;
+
+Condition ::= (CondTermList) Condition OR CondTerm
+			|
+			(SingleCondTerm) CondTerm
+			;
+
+CondTerm ::= (CondFactList) CondTerm AND CondFact
+			|
+			(SingleCondFact) CondFact
+			;
+
+CondFact ::= (SingleCondFactExpr) Expr
+			|
+			(RelopCondFactExpr) Expr Relop Expr
+			;
+
+
+
+/* END*/
 
 
 /* DesignatorStatement */
@@ -286,6 +325,19 @@ Mulop ::= (Multiplication) MUL
 		|
 		(Moduo) MOD
 		;
+		
+Relop ::= (BoolEqual) BOOL_EQUAL
+		|
+		(BoolNotEqual) BOOL_NOT_EQUAL
+		|
+		(Greater) GREATER
+		| 
+		(GreaterOrEqual) GREATER_OR_EQUAL
+		|
+	 	(Less) LESS
+	 	|
+	 	(LessOrEqual) LESS_OR_EQUAL
+	 	;
 
 /* End_Operators */
 

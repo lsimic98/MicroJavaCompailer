@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 21/5/2021 16:49:47
+// 29/5/2021 0:41:41
 
 
 package rs.ac.bg.etf.pp1.ast;
@@ -8,12 +8,10 @@ package rs.ac.bg.etf.pp1.ast;
 public class PrintWithoutArgs extends Statement {
 
     private Expr Expr;
-    private Integer N2;
 
-    public PrintWithoutArgs (Expr Expr, Integer N2) {
+    public PrintWithoutArgs (Expr Expr) {
         this.Expr=Expr;
         if(Expr!=null) Expr.setParent(this);
-        this.N2=N2;
     }
 
     public Expr getExpr() {
@@ -22,14 +20,6 @@ public class PrintWithoutArgs extends Statement {
 
     public void setExpr(Expr Expr) {
         this.Expr=Expr;
-    }
-
-    public Integer getN2() {
-        return N2;
-    }
-
-    public void setN2(Integer N2) {
-        this.N2=N2;
     }
 
     public void accept(Visitor visitor) {
@@ -59,9 +49,6 @@ public class PrintWithoutArgs extends Statement {
             buffer.append(Expr.toString("  "+tab));
         else
             buffer.append(tab+"  null");
-        buffer.append("\n");
-
-        buffer.append(" "+tab+N2);
         buffer.append("\n");
 
         buffer.append(tab);

@@ -1,34 +1,34 @@
 // generated with ast extension for cup
 // version 0.8
-// 21/5/2021 16:49:47
+// 29/5/2021 0:41:41
 
 
 package rs.ac.bg.etf.pp1.ast;
 
 public class IntegerConst extends ConstIdent {
 
-    private String I1;
-    private Integer N2;
+    private String integerConstName;
+    private Integer integerConstValue;
 
-    public IntegerConst (String I1, Integer N2) {
-        this.I1=I1;
-        this.N2=N2;
+    public IntegerConst (String integerConstName, Integer integerConstValue) {
+        this.integerConstName=integerConstName;
+        this.integerConstValue=integerConstValue;
     }
 
-    public String getI1() {
-        return I1;
+    public String getIntegerConstName() {
+        return integerConstName;
     }
 
-    public void setI1(String I1) {
-        this.I1=I1;
+    public void setIntegerConstName(String integerConstName) {
+        this.integerConstName=integerConstName;
     }
 
-    public Integer getN2() {
-        return N2;
+    public Integer getIntegerConstValue() {
+        return integerConstValue;
     }
 
-    public void setN2(Integer N2) {
-        this.N2=N2;
+    public void setIntegerConstValue(Integer integerConstValue) {
+        this.integerConstValue=integerConstValue;
     }
 
     public void accept(Visitor visitor) {
@@ -51,10 +51,10 @@ public class IntegerConst extends ConstIdent {
         buffer.append(tab);
         buffer.append("IntegerConst(\n");
 
-        buffer.append(" "+tab+I1);
+        buffer.append(" "+tab+integerConstName);
         buffer.append("\n");
 
-        buffer.append(" "+tab+N2);
+        buffer.append(" "+tab+integerConstValue);
         buffer.append("\n");
 
         buffer.append(tab);

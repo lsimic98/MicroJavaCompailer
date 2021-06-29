@@ -1,18 +1,20 @@
 program MJProgram
-	int x; 
-	int y;
+	const int x = 3;
+	const bool y = true;
+	const char z = 'a';
+	int a;
+	int b, c, d[];
 {
 
+	void func(int a1, int a2) int v3, v4; int v5;
+	{
 	
-	void main() {
-	
-		x = 1;
-		y = 2;
-		x = 5 + a;
+	}
+
+	void main() int e, f; char g;{
+		e = 1;
+		f = e + 3;
 		
-		print(10);
-		print(10);
-		print(10);
 		print(10);
 		
 	

@@ -14,6 +14,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import rs.ac.bg.etf.pp1.ast.Program;
 import rs.ac.bg.etf.pp1.util.Log4JUtils;
+import rs.etf.pp1.symboltable.Tab;
 
 public class MJParserTest {
 
@@ -44,11 +45,16 @@ public class MJParserTest {
 
 			// ispis prepoznatih programskih konstrukcija
 			RuleVisitor v = new RuleVisitor();
-			prog.traverseBottomUp(v); 
+			
+			SymbolTable.init(); //Initialize symbol table with universe and boolType
+			SemanticAnalyzer semanticAnalyzer = new SemanticAnalyzer();
+			
+			prog.traverseBottomUp(semanticAnalyzer); 
+			Tab.dump();
 	      
-			log.info(" Print count calls = " + v.printCallCount);
+//			log.info(" Print count calls = " + v.printCallCount);
 
-			log.info(" Deklarisanih promenljivih ima = " + v.varDeclCount);
+//			log.info(" Deklarisanih promenljivih ima = " + v.varDeclCount);
 			
 		} 
 		finally {

@@ -1,34 +1,34 @@
 // generated with ast extension for cup
 // version 0.8
-// 21/5/2021 16:49:47
+// 29/5/2021 0:41:41
 
 
 package rs.ac.bg.etf.pp1.ast;
 
 public class CharacterConst extends ConstIdent {
 
-    private String I1;
-    private Character C2;
+    private String characterConstName;
+    private Character characterConstValue;
 
-    public CharacterConst (String I1, Character C2) {
-        this.I1=I1;
-        this.C2=C2;
+    public CharacterConst (String characterConstName, Character characterConstValue) {
+        this.characterConstName=characterConstName;
+        this.characterConstValue=characterConstValue;
     }
 
-    public String getI1() {
-        return I1;
+    public String getCharacterConstName() {
+        return characterConstName;
     }
 
-    public void setI1(String I1) {
-        this.I1=I1;
+    public void setCharacterConstName(String characterConstName) {
+        this.characterConstName=characterConstName;
     }
 
-    public Character getC2() {
-        return C2;
+    public Character getCharacterConstValue() {
+        return characterConstValue;
     }
 
-    public void setC2(Character C2) {
-        this.C2=C2;
+    public void setCharacterConstValue(Character characterConstValue) {
+        this.characterConstValue=characterConstValue;
     }
 
     public void accept(Visitor visitor) {
@@ -51,10 +51,10 @@ public class CharacterConst extends ConstIdent {
         buffer.append(tab);
         buffer.append("CharacterConst(\n");
 
-        buffer.append(" "+tab+I1);
+        buffer.append(" "+tab+characterConstName);
         buffer.append("\n");
 
-        buffer.append(" "+tab+C2);
+        buffer.append(" "+tab+characterConstValue);
         buffer.append("\n");
 
         buffer.append(tab);

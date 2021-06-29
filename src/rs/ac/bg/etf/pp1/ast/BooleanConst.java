@@ -1,34 +1,34 @@
 // generated with ast extension for cup
 // version 0.8
-// 21/5/2021 16:49:47
+// 29/5/2021 0:41:41
 
 
 package rs.ac.bg.etf.pp1.ast;
 
 public class BooleanConst extends ConstIdent {
 
-    private String I1;
-    private Boolean B2;
+    private String booleanConstName;
+    private Boolean booleanConstValue;
 
-    public BooleanConst (String I1, Boolean B2) {
-        this.I1=I1;
-        this.B2=B2;
+    public BooleanConst (String booleanConstName, Boolean booleanConstValue) {
+        this.booleanConstName=booleanConstName;
+        this.booleanConstValue=booleanConstValue;
     }
 
-    public String getI1() {
-        return I1;
+    public String getBooleanConstName() {
+        return booleanConstName;
     }
 
-    public void setI1(String I1) {
-        this.I1=I1;
+    public void setBooleanConstName(String booleanConstName) {
+        this.booleanConstName=booleanConstName;
     }
 
-    public Boolean getB2() {
-        return B2;
+    public Boolean getBooleanConstValue() {
+        return booleanConstValue;
     }
 
-    public void setB2(Boolean B2) {
-        this.B2=B2;
+    public void setBooleanConstValue(Boolean booleanConstValue) {
+        this.booleanConstValue=booleanConstValue;
     }
 
     public void accept(Visitor visitor) {
@@ -51,10 +51,10 @@ public class BooleanConst extends ConstIdent {
         buffer.append(tab);
         buffer.append("BooleanConst(\n");
 
-        buffer.append(" "+tab+I1);
+        buffer.append(" "+tab+booleanConstName);
         buffer.append("\n");
 
-        buffer.append(" "+tab+B2);
+        buffer.append(" "+tab+booleanConstValue);
         buffer.append("\n");
 
         buffer.append(tab);
