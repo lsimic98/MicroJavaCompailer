@@ -6,17 +6,31 @@ program MJProgram
 	int b, c, d[];
 {
 
-	void func(int a1, int a2) int v3, v4; int v5;
-	{
 	
-	}
-
 	void main() int e, f; char g;{
 		e = 1;
-		f = e + 3;
+		f = -e + 3;
 		
+		d = new int[e + f];
+		
+		d[d[2]]++;
+		
+		
+		print(d[1]);
+		print(e);
+		print(e, 10);
 		print(10);
 		
-	
+		if(e>f && g=='c')
+		{
+			print(11);
+			print(12);
+		}
+		else
+		{
+			print(12);
+			print(11);
+		}
+
 	}
 }

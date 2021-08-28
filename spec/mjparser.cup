@@ -5,11 +5,17 @@ import org.apache.log4j.*;
 import rs.ac.bg.etf.pp1.ast.*;
 import rs.etf.pp1.symboltable.concepts.*;
 
+import java.util.*;
+import rs.ac.bg.etf.pp1.test.CompilerError;
+import rs.ac.bg.etf.pp1.test.CompilerError.CompilerErrorType;
+
 
 parser code {:
 
 	Logger log = Logger.getLogger(getClass());
 	boolean errorDetected = false;
+	private List<CompilerError> synErrors = new ArrayList<>();
+	
    
    
     // slede redefinisani metodi za prijavu gresaka radi izmene teksta poruke
@@ -31,9 +37,18 @@ parser code {:
     	errorDetected = true;
     	StringBuilder msg = new StringBuilder(message); 
     	if (info instanceof Symbol)
-            msg.append (" na liniji ").append(((Symbol)info).left);
+    	{
+    		msg.append (" na liniji ").append(((Symbol)info).left);
+			CompilerError c= new CompilerError(((Symbol)info).left, msg.append (" na liniji ").append(((Symbol)info).left).toString(), CompilerErrorType.SYNTAX_ERROR);
+			synErrors.add(c);
+    	}
         log.error(msg.toString());
     }
+    
+    public List<CompilerError> getErrors()
+	{
+		return synErrors;
+	}
 
 
 :}
@@ -54,7 +69,7 @@ init with {:
 terminal PROG, BREAK, CLASS, ENUM, ELSE, CONST, IF, DO, WHILE, NEW, PRINT, READ, RETURN, VOID, EXTENDS, CONTINUE, CASE;
 terminal PLUS, MINUS, MUL, DIV, MOD, BOOL_EQUAL, BOOL_NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL;
 terminal AND, OR, EQUALS, INC, DEC, SEMI, COLON, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LBRACE, RBRACE, CONDITIONAL;
-terminal PLUS_EQUALS, MINUS_EQUALS, MUL_EQUALS, DIV_EQUALS, MOD_EQUALS;
+terminal PLUS_EQUALS, MINUS_EQUALS, MUL_EQUALS, DIV_EQUALS, MOD_EQUALS, MODIFOPERATOR;
 
 terminal Boolean BOOL_CONST;
 terminal Integer NUM_CONST;
@@ -64,21 +79,22 @@ terminal String IDENT;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, ProgDeclList, ConstDecl, ConstList, ConstIdent;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj VarDecl, VarDeclList, VarIdent;
-nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorList;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Expr1, ExprList, Statement, Term, Factor;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorList, MethodTypeName;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, ExprList, Statement, Term, Factor;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Condition, CondTerm, CondFact;
 
 // nonterminal ProgDeclList, ConstDecl, ConstList, ConstIdent;
 // nonterminal VarDecl, VarDeclList, VarIdent;
 nonterminal ClassDecl, ClassVarDeclList;
-nonterminal MethodDeclList, MethodDecl, MethodTypeName, MethodVarDeclList;
+nonterminal MethodDeclList, MethodDecl, MethodVarDeclList;
 nonterminal FormPars, FormalParamList, FormalParamDecl;
 nonterminal StatementList;
-nonterminal DesignatorStatement;
+nonterminal DesignatorStatement, LSquareBrace;
 // nonterminal Term;
 // nonterminal Factor;
 nonterminal Assignop, Mulop, Addop;
-nonterminal Relop, BeginIf, BeginElse, RParenResolution;
+nonterminal Relop, BeginIf, BeginElse, RParenResolution, OrCondition;
+nonterminal StatementStartLabel;
 
 precedence left ELSE;
 
@@ -129,7 +145,8 @@ VarDeclList ::= (SingleVarDecl) VarIdent
 VarIdent ::= (OneVar) IDENT:varName
 			|
 			(ArrayVar) IDENT:varName LSQUARE RSQUARE
-			;
+			|
+			error:e {: parser.report_error("Oporavak od greske na liniji: " + eleft, null); :};
 
 /* END_VarDecl */
 
@@ -207,11 +224,12 @@ Statement ::= (DesignatorStatementInStatement) DesignatorStatement SEMI
 			(StatementBlock) LBRACE StatementList RBRACE
 			;
 
-StatementList ::= (Statements) StatementList Statement
+StatementList ::= (Statements) StatementList StatementStartLabel Statement
 				|
 				(NoStatements) /* epsilon */
 				;
-
+				
+StatementStartLabel ::= (StatementStartLabel) /* epsilon */;
 
 /* END_Statement */
 
@@ -220,7 +238,7 @@ BeginIf ::= (BeginIf) IF;
 BeginElse ::= (BeginElse) ELSE;
 RParenResolution ::= (RParenResolution) RPAREN;
 
-Condition ::= (CondTermList) Condition OR CondTerm
+Condition ::= (CondTermList) Condition OrCondition CondTerm
 			|
 			(SingleCondTerm) CondTerm
 			;
@@ -235,6 +253,7 @@ CondFact ::= (SingleCondFactExpr) Expr
 			(RelopCondFactExpr) Expr Relop Expr
 			;
 
+OrCondition ::= (OrCondition)OR;
 
 
 /* END*/
@@ -255,24 +274,21 @@ DesignatorStatement ::= (AssingDesignatorStatement) Designator Assignop Expr
 
 Designator ::= (Designator) IDENT:name DesignatorList;
 
-DesignatorList ::= (DesignatorListArray) LSQUARE Expr RSQUARE
+DesignatorList ::= (DesignatorListArray) LSquareBrace Expr RSQUARE
 				|
 				(NoDesignatorList) /* epsilon */
 				;
+LSquareBrace ::= (LSquareBrace) LSQUARE;		
+				
 
 /* END_Designator */
 
 /* Expr */
 
-Expr1 ::= (NegativeExpr) MINUS ExprList
+Expr ::= (NegativeExpr) MINUS ExprList
 		|
 		(PositiveExpr) ExprList
 		;
-
-Expr ::= (ConditionalExpr) Expr1 CONDITIONAL Expr1 COLON Expr1 /* Expr1 ? Expr1 : Expr1 - TernarniOperator */
-		|
-		(NormalExpr) Expr1
-		; 
 
 ExprList ::= (MulitExprList) ExprList Addop Term
 			|
@@ -312,11 +328,15 @@ Factor ::= (FactorNumConst) NUM_CONST
 
 /* Operators */
 
-Assignop ::= (EqualsOperation) EQUALS;
+Assignop ::= (EqualsOperation) EQUALS
+			|
+			error:e {: parser.report_error("Oporavak od greske na liniji: " + eleft, null); :};
 
 Addop ::= (Plus) PLUS
 		|
 		(Minus) MINUS
+		|
+		(Modifoperator) MODIFOPERATOR
 		;
 
 Mulop ::= (Multiplication) MUL

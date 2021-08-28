@@ -5,11 +5,17 @@ import org.apache.log4j.*;
 import rs.ac.bg.etf.pp1.ast.*;
 import rs.etf.pp1.symboltable.concepts.*;
 
+import java.util.*;
+import rs.ac.bg.etf.pp1.test.CompilerError;
+import rs.ac.bg.etf.pp1.test.CompilerError.CompilerErrorType;
+
 
 parser code {:
 
 	Logger log = Logger.getLogger(getClass());
 	boolean errorDetected = false;
+	private List<CompilerError> synErrors = new ArrayList<>();
+	
    
    
     // slede redefinisani metodi za prijavu gresaka radi izmene teksta poruke
@@ -31,9 +37,18 @@ parser code {:
     	errorDetected = true;
     	StringBuilder msg = new StringBuilder(message); 
     	if (info instanceof Symbol)
-            msg.append (" na liniji ").append(((Symbol)info).left);
+    	{
+    		msg.append (" na liniji ").append(((Symbol)info).left);
+			CompilerError c= new CompilerError(((Symbol)info).left, msg.append (" na liniji ").append(((Symbol)info).left).toString(), CompilerErrorType.SYNTAX_ERROR);
+			synErrors.add(c);
+    	}
         log.error(msg.toString());
     }
+    
+    public List<CompilerError> getErrors()
+	{
+		return synErrors;
+	}
 
 
 :}
@@ -54,7 +69,7 @@ init with {:
 terminal PROG, BREAK, CLASS, ENUM, ELSE, CONST, IF, DO, WHILE, NEW, PRINT, READ, RETURN, VOID, EXTENDS, CONTINUE, CASE;
 terminal PLUS, MINUS, MUL, DIV, MOD, BOOL_EQUAL, BOOL_NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESS, LESS_OR_EQUAL;
 terminal AND, OR, EQUALS, INC, DEC, SEMI, COLON, COMMA, LPAREN, RPAREN, LSQUARE, RSQUARE, LBRACE, RBRACE, CONDITIONAL;
-terminal PLUS_EQUALS, MINUS_EQUALS, MUL_EQUALS, DIV_EQUALS, MOD_EQUALS;
+terminal PLUS_EQUALS, MINUS_EQUALS, MUL_EQUALS, DIV_EQUALS, MOD_EQUALS, MODIFOPERATOR;
 
 terminal Boolean BOOL_CONST;
 terminal Integer NUM_CONST;
@@ -64,8 +79,8 @@ terminal String IDENT;
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, ProgDeclList, ConstDecl, ConstList, ConstIdent;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj VarDecl, VarDeclList, VarIdent;
-nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorList;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, Expr1, ExprList, Statement, Term, Factor;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Designator, DesignatorList, MethodTypeName;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Expr, ExprList, Statement, Term, Factor;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Condition, CondTerm, CondFact;
 
 // nonterminal ProgDeclList, ConstDecl, ConstList, ConstIdent;
@@ -74,13 +89,13 @@ nonterminal ClassDecl ClassDecl;
 nonterminal ClassVarDeclList ClassVarDeclList;
 nonterminal MethodDeclList MethodDeclList;
 nonterminal MethodDecl MethodDecl;
-nonterminal MethodTypeName MethodTypeName;
 nonterminal MethodVarDeclList MethodVarDeclList;
 nonterminal FormPars FormPars;
 nonterminal FormalParamList FormalParamList;
 nonterminal FormalParamDecl FormalParamDecl;
 nonterminal StatementList StatementList;
 nonterminal DesignatorStatement DesignatorStatement;
+nonterminal LSquareBrace LSquareBrace;
 // nonterminal Term;
 // nonterminal Factor;
 nonterminal Assignop Assignop;
@@ -90,6 +105,8 @@ nonterminal Relop Relop;
 nonterminal BeginIf BeginIf;
 nonterminal BeginElse BeginElse;
 nonterminal RParenResolution RParenResolution;
+nonterminal OrCondition OrCondition;
+nonterminal StatementStartLabel StatementStartLabel;
 
 precedence left ELSE;
 
@@ -140,7 +157,8 @@ VarDeclList ::= (SingleVarDecl) VarIdent:V1 {: RESULT=new SingleVarDecl(V1); RES
 VarIdent ::= (OneVar) IDENT:varName {: RESULT=new OneVar(varName); RESULT.setLine(varNameleft); :}
 			|
 			(ArrayVar) IDENT:varName LSQUARE RSQUARE {: RESULT=new ArrayVar(varName); RESULT.setLine(varNameleft); :}
-			;
+			|
+			error:e {: parser.report_error("Oporavak od greske na liniji: " + eleft, null); :} {: RESULT=new VarIdentDerived1(); :};
 
 /* END_VarDecl */
 
@@ -218,11 +236,12 @@ Statement ::= (DesignatorStatementInStatement) DesignatorStatement:D1 SEMI {: RE
 			(StatementBlock) LBRACE StatementList:S1 RBRACE {: RESULT=new StatementBlock(S1); RESULT.setLine(S1left); :}
 			;
 
-StatementList ::= (Statements) StatementList:S1 Statement:S2 {: RESULT=new Statements(S1, S2); RESULT.setLine(S1left); :}
+StatementList ::= (Statements) StatementList:S1 StatementStartLabel:S2 Statement:S3 {: RESULT=new Statements(S1, S2, S3); RESULT.setLine(S1left); :}
 				|
 				(NoStatements) {: RESULT=new NoStatements(); :} /* epsilon */
 				;
-
+				
+StatementStartLabel ::= (StatementStartLabel) {: RESULT=new StatementStartLabel(); :} /* epsilon */;
 
 /* END_Statement */
 
@@ -231,7 +250,7 @@ BeginIf ::= (BeginIf) IF {: RESULT=new BeginIf(); :};
 BeginElse ::= (BeginElse) ELSE {: RESULT=new BeginElse(); :};
 RParenResolution ::= (RParenResolution) RPAREN {: RESULT=new RParenResolution(); :};
 
-Condition ::= (CondTermList) Condition:C1 OR CondTerm:C2 {: RESULT=new CondTermList(C1, C2); RESULT.setLine(C1left); :}
+Condition ::= (CondTermList) Condition:C1 OrCondition:O2 CondTerm:C3 {: RESULT=new CondTermList(C1, O2, C3); RESULT.setLine(C1left); :}
 			|
 			(SingleCondTerm) CondTerm:C1 {: RESULT=new SingleCondTerm(C1); RESULT.setLine(C1left); :}
 			;
@@ -246,6 +265,7 @@ CondFact ::= (SingleCondFactExpr) Expr:E1 {: RESULT=new SingleCondFactExpr(E1); 
 			(RelopCondFactExpr) Expr:E1 Relop:R2 Expr:E3 {: RESULT=new RelopCondFactExpr(E1, R2, E3); RESULT.setLine(E1left); :}
 			;
 
+OrCondition ::= (OrCondition)OR {: RESULT=new OrCondition(); :};
 
 
 /* END*/
@@ -266,24 +286,21 @@ DesignatorStatement ::= (AssingDesignatorStatement) Designator:D1 Assignop:A2 Ex
 
 Designator ::= (Designator) IDENT:name DesignatorList:D1 {: RESULT=new Designator(name, D1); RESULT.setLine(nameleft); :};
 
-DesignatorList ::= (DesignatorListArray) LSQUARE Expr:E1 RSQUARE {: RESULT=new DesignatorListArray(E1); RESULT.setLine(E1left); :}
+DesignatorList ::= (DesignatorListArray) LSquareBrace:L1 Expr:E2 RSQUARE {: RESULT=new DesignatorListArray(L1, E2); RESULT.setLine(L1left); :}
 				|
 				(NoDesignatorList) {: RESULT=new NoDesignatorList(); :} /* epsilon */
 				;
+LSquareBrace ::= (LSquareBrace) LSQUARE {: RESULT=new LSquareBrace(); :};		
+				
 
 /* END_Designator */
 
 /* Expr */
 
-Expr1 ::= (NegativeExpr) MINUS ExprList:E1 {: RESULT=new NegativeExpr(E1); RESULT.setLine(E1left); :}
+Expr ::= (NegativeExpr) MINUS ExprList:E1 {: RESULT=new NegativeExpr(E1); RESULT.setLine(E1left); :}
 		|
 		(PositiveExpr) ExprList:E1 {: RESULT=new PositiveExpr(E1); RESULT.setLine(E1left); :}
 		;
-
-Expr ::= (ConditionalExpr) Expr1:E1 CONDITIONAL Expr1:E2 COLON Expr1:E3 {: RESULT=new ConditionalExpr(E1, E2, E3); RESULT.setLine(E1left); :} /* Expr1 ? Expr1 : Expr1 - TernarniOperator */
-		|
-		(NormalExpr) Expr1:E1 {: RESULT=new NormalExpr(E1); RESULT.setLine(E1left); :}
-		; 
 
 ExprList ::= (MulitExprList) ExprList:E1 Addop:A2 Term:T3 {: RESULT=new MulitExprList(E1, A2, T3); RESULT.setLine(E1left); :}
 			|
@@ -323,11 +340,15 @@ Factor ::= (FactorNumConst) NUM_CONST:N1 {: RESULT=new FactorNumConst(N1); RESUL
 
 /* Operators */
 
-Assignop ::= (EqualsOperation) EQUALS {: RESULT=new EqualsOperation(); :};
+Assignop ::= (EqualsOperation) EQUALS {: RESULT=new EqualsOperation(); :}
+			|
+			error:e {: parser.report_error("Oporavak od greske na liniji: " + eleft, null); :} {: RESULT=new AssignopDerived1(); :};
 
 Addop ::= (Plus) PLUS {: RESULT=new Plus(); :}
 		|
 		(Minus) MINUS {: RESULT=new Minus(); :}
+		|
+		(Modifoperator) MODIFOPERATOR {: RESULT=new Modifoperator(); :}
 		;
 
 Mulop ::= (Multiplication) MUL {: RESULT=new Multiplication(); :}

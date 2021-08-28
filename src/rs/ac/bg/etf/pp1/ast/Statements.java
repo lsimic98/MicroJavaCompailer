@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 29/5/2021 0:41:41
+// 28/7/2021 13:55:4
 
 
 package rs.ac.bg.etf.pp1.ast;
@@ -8,11 +8,14 @@ package rs.ac.bg.etf.pp1.ast;
 public class Statements extends StatementList {
 
     private StatementList StatementList;
+    private StatementStartLabel StatementStartLabel;
     private Statement Statement;
 
-    public Statements (StatementList StatementList, Statement Statement) {
+    public Statements (StatementList StatementList, StatementStartLabel StatementStartLabel, Statement Statement) {
         this.StatementList=StatementList;
         if(StatementList!=null) StatementList.setParent(this);
+        this.StatementStartLabel=StatementStartLabel;
+        if(StatementStartLabel!=null) StatementStartLabel.setParent(this);
         this.Statement=Statement;
         if(Statement!=null) Statement.setParent(this);
     }
@@ -23,6 +26,14 @@ public class Statements extends StatementList {
 
     public void setStatementList(StatementList StatementList) {
         this.StatementList=StatementList;
+    }
+
+    public StatementStartLabel getStatementStartLabel() {
+        return StatementStartLabel;
+    }
+
+    public void setStatementStartLabel(StatementStartLabel StatementStartLabel) {
+        this.StatementStartLabel=StatementStartLabel;
     }
 
     public Statement getStatement() {
@@ -39,17 +50,20 @@ public class Statements extends StatementList {
 
     public void childrenAccept(Visitor visitor) {
         if(StatementList!=null) StatementList.accept(visitor);
+        if(StatementStartLabel!=null) StatementStartLabel.accept(visitor);
         if(Statement!=null) Statement.accept(visitor);
     }
 
     public void traverseTopDown(Visitor visitor) {
         accept(visitor);
         if(StatementList!=null) StatementList.traverseTopDown(visitor);
+        if(StatementStartLabel!=null) StatementStartLabel.traverseTopDown(visitor);
         if(Statement!=null) Statement.traverseTopDown(visitor);
     }
 
     public void traverseBottomUp(Visitor visitor) {
         if(StatementList!=null) StatementList.traverseBottomUp(visitor);
+        if(StatementStartLabel!=null) StatementStartLabel.traverseBottomUp(visitor);
         if(Statement!=null) Statement.traverseBottomUp(visitor);
         accept(visitor);
     }
@@ -61,6 +75,12 @@ public class Statements extends StatementList {
 
         if(StatementList!=null)
             buffer.append(StatementList.toString("  "+tab));
+        else
+            buffer.append(tab+"  null");
+        buffer.append("\n");
+
+        if(StatementStartLabel!=null)
+            buffer.append(StatementStartLabel.toString("  "+tab));
         else
             buffer.append(tab+"  null");
         buffer.append("\n");

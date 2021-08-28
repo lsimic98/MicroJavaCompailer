@@ -52,6 +52,16 @@ public class MJParserTest {
 			prog.traverseBottomUp(semanticAnalyzer); 
 			Tab.dump();
 	      
+			if(semanticAnalyzer.passed())
+			{
+				log.info("Semanticka analiza uspesno zavresna! :D");
+				log.info("===================================");	
+			}
+			else
+			{
+				log.error("Semanticka analiza neuspesno zavresna! :(");
+				log.error("===================================");	
+			}
 //			log.info(" Print count calls = " + v.printCallCount);
 
 //			log.info(" Deklarisanih promenljivih ima = " + v.varDeclCount);

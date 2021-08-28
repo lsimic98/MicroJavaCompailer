@@ -1,11 +1,17 @@
 package rs.ac.bg.etf.pp1;
 
 import java_cup.runtime.Symbol; 
+import java.util.*;
+import rs.ac.bg.etf.pp1.test.CompilerError;
+import rs.ac.bg.etf.pp1.test.CompilerError.CompilerErrorType;
+
 
 %%
 
 %{
 	//CODE Sekcija
+	
+	private List<CompilerError> lexError = new ArrayList<>();
 
 	// ukljucivanje informacije o poziciji tokena
 	private Symbol new_symbol(int type) {
@@ -15,6 +21,11 @@ import java_cup.runtime.Symbol;
 	// ukljucivanje informacije o poziciji tokena
 	private Symbol new_symbol(int type, Object value) {
 		return new Symbol(type, yyline+1, yycolumn, value);
+	}
+	
+	public List<CompilerError> getLexList()
+	{
+		return lexError;
 	}
 
 %}
@@ -82,6 +93,8 @@ import java_cup.runtime.Symbol;
 "{" 		{ return new_symbol(sym.LBRACE, yytext()); }
 "}" 		{ return new_symbol(sym.RBRACE, yytext()); }
 "?" 		{ return new_symbol(sym.CONDITIONAL, yytext()); }
+"<=>" 		{ return new_symbol(sym.MODIFOPERATOR, yytext()); }
+
 
 "+=" 		{ return new_symbol(sym.PLUS_EQUALS, yytext()); }
 "-=" 		{ return new_symbol(sym.MINUS_EQUALS, yytext()); }
@@ -101,7 +114,7 @@ import java_cup.runtime.Symbol;
 ([a-z]|[A-Z])[a-z|A-Z|0-9|_]* 	{ return new_symbol(sym.IDENT, yytext()); }
 
 
-. { System.err.println("Leksicka greska (" + yytext() + ") u liniji " + (yyline + 1));}
+. {lexError.add(new CompilerError(yyline+1, "Leksicka greska u liniji: ", CompilerErrorType.LEXICAL_ERROR)); System.err.println("Leksicka greska ("+yytext()+") u liniji "+(yyline+1)); }
 
 
 

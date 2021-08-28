@@ -1,17 +1,28 @@
 // generated with ast extension for cup
 // version 0.8
-// 29/5/2021 0:41:41
+// 28/7/2021 13:55:4
 
 
 package rs.ac.bg.etf.pp1.ast;
 
 public class DesignatorListArray extends DesignatorList {
 
+    private LSquareBrace LSquareBrace;
     private Expr Expr;
 
-    public DesignatorListArray (Expr Expr) {
+    public DesignatorListArray (LSquareBrace LSquareBrace, Expr Expr) {
+        this.LSquareBrace=LSquareBrace;
+        if(LSquareBrace!=null) LSquareBrace.setParent(this);
         this.Expr=Expr;
         if(Expr!=null) Expr.setParent(this);
+    }
+
+    public LSquareBrace getLSquareBrace() {
+        return LSquareBrace;
+    }
+
+    public void setLSquareBrace(LSquareBrace LSquareBrace) {
+        this.LSquareBrace=LSquareBrace;
     }
 
     public Expr getExpr() {
@@ -27,15 +38,18 @@ public class DesignatorListArray extends DesignatorList {
     }
 
     public void childrenAccept(Visitor visitor) {
+        if(LSquareBrace!=null) LSquareBrace.accept(visitor);
         if(Expr!=null) Expr.accept(visitor);
     }
 
     public void traverseTopDown(Visitor visitor) {
         accept(visitor);
+        if(LSquareBrace!=null) LSquareBrace.traverseTopDown(visitor);
         if(Expr!=null) Expr.traverseTopDown(visitor);
     }
 
     public void traverseBottomUp(Visitor visitor) {
+        if(LSquareBrace!=null) LSquareBrace.traverseBottomUp(visitor);
         if(Expr!=null) Expr.traverseBottomUp(visitor);
         accept(visitor);
     }
@@ -44,6 +58,12 @@ public class DesignatorListArray extends DesignatorList {
         StringBuffer buffer=new StringBuffer();
         buffer.append(tab);
         buffer.append("DesignatorListArray(\n");
+
+        if(LSquareBrace!=null)
+            buffer.append(LSquareBrace.toString("  "+tab));
+        else
+            buffer.append(tab+"  null");
+        buffer.append("\n");
 
         if(Expr!=null)
             buffer.append(Expr.toString("  "+tab));

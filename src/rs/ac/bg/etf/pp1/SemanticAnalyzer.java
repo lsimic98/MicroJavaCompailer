@@ -11,13 +11,24 @@ import rs.etf.pp1.symboltable.Tab;
 import rs.etf.pp1.symboltable.concepts.Obj;
 import rs.etf.pp1.symboltable.concepts.Struct;
 
+import rs.ac.bg.etf.pp1.test.CompilerError;
+import rs.ac.bg.etf.pp1.test.CompilerError.CompilerErrorType;
+
+
 public class SemanticAnalyzer extends VisitorAdaptor {
+	
+	private List<CompilerError> semErrors = new ArrayList<>();
 		
 	boolean mainMethodDetected = false;
+	int mainMethodCnt = 0;
 	boolean errorDetected = false;
+	
 	int printCallCount = 0;
+	
 	Obj currentMethod = null;
+	String currentMethodName;
 	boolean returnFound = false;
+	
 	int nVars;
 	int cnt = 0;
 	
@@ -30,13 +41,23 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	/*----------------------------------------------------------*/
 	
 	Logger log = Logger.getLogger(getClass());
+	
+	public List<CompilerError> getErrors()
+	{
+		return semErrors;
+	} 
 
 	public void report_error(String message, SyntaxNode info) {
 		errorDetected = true;
 		StringBuilder msg = new StringBuilder(message);
 		int line = (info == null) ? 0: info.getLine();
 		if (line != 0)
+		{
 			msg.append (" na liniji ").append(line);
+			CompilerError c= new CompilerError(line, msg.append (" na liniji ").append(line).toString(), CompilerErrorType.SEMANTIC_ERROR);
+			semErrors.add(c);
+			
+		}
 		log.error(msg.toString());
 	}
 
@@ -72,6 +93,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	public void visit(Type type)
 	{
 		Obj typeNode = Tab.find(type.getTypeName());
+		
 		if (typeNode == Tab.noObj) {
 			report_error("Nije pronadjen tip " + type.getTypeName() + " u tabeli simbola", null);
 			type.struct = Tab.noType;
@@ -81,6 +103,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 			if (Obj.Type == typeNode.getKind()) {
 				type.struct = typeNode.getType();
 				currentSelectedType = typeNode.getType();
+				report_info("Tip uspesno detektovan! [" + type.getTypeName() + "]", type);
 			} 
 			else {
 				report_error("Greska: Ime " + type.getTypeName() + " ne predstavlja tip ", type);
@@ -90,7 +113,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		}  	
 	}
 	
-	//Proveravamo da li NUM_CONST, CHAR_CONST i BOOL_CONST odgovara deklarisanom tipu; primer: int x = 3;
+	//Proveravamo da li NUM_CONST, CHAR_CONST i BOOL_CONST odgovara deklarisanom tipu; primer: const int x = 3;
 	public void visit(IntegerConst intConst)
 	{
 		String intConstName = intConst.getIntegerConstName();
@@ -98,7 +121,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		
 		if(!Tab.intType.equals(currentSelectedType) || !Tab.find(intConstName).equals(Tab.noObj))
 		{
-			report_error("Greska: Tip se ne slaze ili konstnta sa deklarisanim imenom vec psotoji." , intConst);
+			report_error("Greska: Tip se ne slaze ili konstanta sa deklarisanim imenom vec psotoji." , intConst);
 		}
 				
 		Obj obj = Tab.insert(Obj.Con, intConstName, currentSelectedType);
@@ -195,16 +218,19 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     	
     	if(methodName.equals("main"))
     	{
-    		mainMethodDetected = true;
+//    		mainMethodDetected = true;
 //    		if(currentMethodFormPars.size() > 0)
 //    		{
 //    			report_error("Main metoda ne moze da ima parametre! ", voidMethodType);
 //    		}
+    		mainMethodCnt++;
     	}
     	
     	currentMethod = Tab.insert(Obj.Meth, methodName, Tab.noType);
     	Tab.openScope(); //Ubacen Obj tipa metode bez pobratnog tip
     	currentMethodFormParsList = new ArrayList<Obj>(); //Nova lista parametara
+    	
+    	voidMethodType.obj = currentMethod;
     	
     }
 	
@@ -254,23 +280,33 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 	    	currentMethod.setLevel(currentMethodFormParsList.size());
     	}
     	
-    	currentMethodFormParsList = null;
+//    	currentMethodFormParsList = null;
     	
 
     }
 	
     public void visit(MethodDecl methodDecl)
     {
+    	if(currentMethod.getName().equals("main") && currentMethodFormParsList.size()==0 && mainMethodCnt==1)
+    	{
+    		mainMethodDetected = true;
+    		report_info("Main metoda uspesno detektovana u odogovarajucem obliku!", methodDecl);
+    	}
+    	else if(currentMethod.getName().equals("main"))
+    	{
+    		mainMethodDetected = false;
+    		report_error("Greska: Deklarisano vise main metoda ili main metoda ima parametre!", methodDecl);
+    		
+    	}
+    	
+    	
     	Tab.chainLocalSymbols(currentMethod);
     	Tab.closeScope();
     	
     	currentMethod = null;
     }
     
-    public void visit(NormalExpr normalExpr)
-    {
-    	normalExpr.struct = normalExpr.getExpr1().struct;
-    }
+
     
     
     /* Designators */
@@ -290,6 +326,15 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 		)
     	{
     		report_error("Greska: Promenljiva nije nizovskog tipa! ", designator);
+    	}
+    	
+    }
+    
+    public void visit(DesignatorListArray designatorListArray)
+    {
+    	if(!designatorListArray.getExpr().struct.equals(Tab.intType))
+    	{
+    		report_error("Greska: Izraz za velicinu niza mora biti tipa int!", designatorListArray);
     	}
     	
     }
@@ -414,6 +459,9 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     	}
     	
     	factorList.struct = factorList.getFactor().struct;
+    	
+    	
+    	//TODO: provera MulopRight
 
     }
     /* END_Term */
@@ -447,6 +495,10 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     }
     public void visit(FactorNewArray factorNewArray)
     {
+    	if(!factorNewArray.getExpr().struct.equals(Tab.intType))
+    	{
+    		report_error("Greska: Izraz za velicinu niza mora biti tipa int!", factorNewArray);
+    	}
     	factorNewArray.struct = new Struct(Struct.Array, factorNewArray.getType().struct);
     }
     public void visit(FactorExpr factorExpr)
@@ -483,6 +535,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
 				readExpr.getDesignator().getDesignatorList() instanceof NoDesignatorList
 			)
     		{
+    			//Samo refernca, ne moze!
     			report_error("Greska: Ne mozemo procitati niz sa standardnog ulaza!", readExpr);		
     		}
     		
@@ -551,7 +604,7 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     	Struct exprStruct = singleCondFactExpr.getExpr().struct;
     	singleCondFactExpr.struct = exprStruct;
     	
-    	if(!singleCondFactExpr.equals(SymbolTable.boolType))
+    	if(!exprStruct.equals(SymbolTable.boolType))
     	{
     		report_error("Greska: Izraz mora biti logickog tipa Bool!", singleCondFactExpr);
     	}
@@ -614,13 +667,13 @@ public class SemanticAnalyzer extends VisitorAdaptor {
     {
     	for(Obj obj : list)
     	{
-    		if(obj.getName().equals(obj))
+    		if(obj.getName().equals(name))
     			return obj;
     	}
     	return Tab.noObj;
     }
 	public boolean passed() {
-		return !errorDetected;
+		return !errorDetected && mainMethodDetected && mainMethodCnt==1;
 	}
 	
 

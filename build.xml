@@ -10,6 +10,9 @@
 				<exclude name="RuleVisitor.java"/>
 				<exclude name="SemanticAnalyzer.java"/>
 				<exclude name="SymbolTable.java"/>
+				<exclude name="CodeGenerator.java"/>
+				<exclude name="test/Compiler.java"/>
+				<exclude name="test/CompilerError.java"/>
 			</fileset>
 		</delete>
 		<delete>
@@ -20,13 +23,13 @@
 		</delete>
 	</target>
 
-	<!--target name="lexerGen" depends="delete">
+	<target name="lexerGen" depends="delete">
 		<java jar="lib/JFlex.jar" fork="true">
 			<arg value="-d"/>
 			<arg value="./src/rs/ac/bg/etf/pp1"/>
 			<arg value="spec/mjlexer.lex"/>
 		</java>
-	</target-->
+	</target>
 
 	<target name="parserGen" depends="delete">
 		<java jar="lib/cup_v10k.jar" fork="true">
@@ -54,9 +57,30 @@
 				<pathelement path="lib/cup_v10k.jar"/>
 				<pathelement path="lib/log4j-1.2.17.jar"/>
 				<pathelement path="lib/symboltable-1-1.jar"/>
+				<pathelement path="lib/mj-runtime-1.1.jar"/>
 			</classpath>
 		</javac>
 
 	</target>
+	
+	
+	<target name="disasm">
+		<java classname="rs.etf.pp1.mj.runtime.disasm">
+			<arg value="test/program.obj"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
+			</classpath>
+		</java>
+	</target>
 
+	<target name="runObj" depends="disasm" >
+		<java classname="rs.etf.pp1.mj.runtime.Run">
+			<arg value="test/program.obj"/>
+<!--			<arg value="-debug"/>-->
+			<redirector input="test/program.in"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime-1.1.jar"/>
+			</classpath>
+		</java>
+	</target>
 </project>
